@@ -1,5 +1,5 @@
 script_name("AutoUpdater")
-script_version("1.0.0")
+script_version("1.2.10b")
 
 local imgui = require('mimgui')
 local encoding = require('encoding')
@@ -8,7 +8,7 @@ local u8 = encoding.UTF8
 
 -- ================= НАСТРОЙКИ ССЫЛОК И ВЕРСИИ =================
 -- Версию можно писать как угодно: "1.2.10b", "2.0-fix", "beta_3"
-local CURRENT_VERSION = "1.0.0" 
+local CURRENT_VERSION = "1.2.10b" 
 
 -- ВНИМАНИЕ: Ссылки обязательно должны быть Raw (прямой текст), а не страница гитхаба!
 local INFO_URL   = "https://raw.githubusercontent.com/USER/REPO/main/update.json"
