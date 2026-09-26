@@ -7,10 +7,8 @@ encoding.default = 'CP1251'
 local u8 = encoding.UTF8
 
 -- ================= НАСТРОЙКИ ССЫЛОК И ВЕРСИИ =================
--- Версию можно писать как угодно: "1.2.10b", "2.0-fix", "beta_3"
 local CURRENT_VERSION = "1.2.10b" 
 
--- ВНИМАНИЕ: Ссылки обязательно должны быть Raw (прямой текст), а не страница гитхаба!
 local INFO_URL   = "https://raw.githubusercontent.com/1XAIZEN/script/refs/heads/main/update.json"
 local SCRIPT_URL = "https://raw.githubusercontent.com/1XAIZEN/script/refs/heads/main/!autoreport.lua"
 -- =============================================================
@@ -27,28 +25,24 @@ local downloadStatusText = ""
 function checkUpdate()
     local tempFilePath = getWorkingDirectory() .. "\\update_temp.json"
     
-    -- Скачиваем JSON во временный файл без зависания игры
     downloadUrlToFile(INFO_URL, tempFilePath, function(id, status, p1, p2)
-        if status == 6 then -- Загрузка завершена успешно
+        if status == 6 then
             if doesFileExist(tempFilePath) then
                 local file = io.open(tempFilePath, "r")
                 if file then
                     local content = file:read("*a")
                     file:close()
-                    os.remove(tempFilePath) -- Удаляем временный файл
+                    os.remove(tempFilePath)
 
-                    -- Парсим JSON
                     local ok, parsed = pcall(decodeJson, content)
                     if ok and parsed and parsed.version then
-                        -- Очищаем от случайных пробелов по краям
                         local remoteVer = tostring(parsed.version):match("^%s*(.-)%s*$")
                         local currentVer = tostring(CURRENT_VERSION):match("^%s*(.-)%s*$")
 
-                        -- Если версия на сервере отличается от нашей (например 1.2.10b ~= 1.0.0)
                         if remoteVer ~= currentVer then
                             updateData.version = remoteVer
                             updateData.changelog = parsed.changelog or "Список изменений не указан."
-                            showUpdateWindow[0] = true -- Показываем окно с кнопкой
+                            showUpdateWindow[0] = true
                         end
                     end
                 end
@@ -62,16 +56,16 @@ function installUpdate()
     isDownloading = true
     downloadStatusText = "Скачивание обновления..."
     
-    local currentScriptPath = thisScript().path -- Путь к текущему запускаемому файлу
+    local currentScriptPath = thisScript().path
     
     downloadUrlToFile(SCRIPT_URL, currentScriptPath, function(id, status, p1, p2)
-        if status == 6 then -- Закачка завершена
+        if status == 6 then
             downloadStatusText = "Успешно! Перезагрузка скрипта..."
             lua_thread.create(function()
                 wait(1200)
-                thisScript():reload() -- Перезапуск скрипта уже с новой версией
+                thisScript():reload()
             end)
-        elseif status == -1 then -- Ошибка
+        elseif status == -1 then
             downloadStatusText = "Ошибка скачивания! Проверьте ссылку."
             isDownloading = false
         end
@@ -82,13 +76,12 @@ function main()
     if not isSampLoaded() or not isSampfuncsLoaded() then return end
     while not isSampAvailable() do wait(100) end
 
-    -- Запуск проверки обновления при загрузке скрипта
     checkUpdate()
 
     wait(-1)
 end
 
--- Интерфейс mimgui (Окно с уведомлением и кнопкой)
+-- Интерфейс mimgui
 local newFrame = imgui.OnFrame(
     function() return showUpdateWindow[0] end,
     function(player)
@@ -103,9 +96,10 @@ local newFrame = imgui.OnFrame(
             imgui.Separator()
             imgui.Text(u8"Список изменений:")
             
-            -- Окно с текстом изменений (со скроллом)
+            -- Окно с текстом изменений
             imgui.BeginChild("ChangelogRegion", imgui.ImVec2(0, 110), true)
-            imgui.TextWrapped(u8(updateData.changelog))
+            -- ИСПРАВЛЕНИЕ ТУТ: текст из JSON уже в UTF-8, оборачивать в u8() не нужно!
+            imgui.TextWrapped(updateData.changelog)
             imgui.EndChild()
             
             imgui.Separator()
