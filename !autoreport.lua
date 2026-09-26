@@ -11,8 +11,8 @@ local u8 = encoding.UTF8
 local CURRENT_VERSION = "1.2.10b" 
 
 -- ВНИМАНИЕ: Ссылки обязательно должны быть Raw (прямой текст), а не страница гитхаба!
-local INFO_URL   = "https://raw.githubusercontent.com/USER/REPO/main/update.json"
-local SCRIPT_URL = "https://raw.githubusercontent.com/USER/REPO/main/script.lua"
+local INFO_URL   = "https://raw.githubusercontent.com/1XAIZEN/script/refs/heads/main/update.json"
+local SCRIPT_URL = "https://raw.githubusercontent.com/1XAIZEN/script/refs/heads/main/!autoreport.lua"
 -- =============================================================
 
 local showUpdateWindow = imgui.new.bool(false)
